@@ -50,3 +50,8 @@ describe "Color", ->
     it "returns a function", ->
       expect(typeof(Color.fader(1, 2, 3, 10, 1))).toEqual("function")
     it "should be better tested"
+
+  describe ".pulser()", ->
+    it "returns a function", ->
+      expect(typeof(Color.fader(1, 2, 3, 10, 1))).toEqual("function")
+    it "should be better tested"

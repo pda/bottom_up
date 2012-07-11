@@ -32,3 +32,12 @@ class @Color
       elapsed = (Date.now() - start) / 1000
       alpha = Math.max(0, initial - elapsed / seconds * initial)
       Color.string(r, g, b, alpha)
+
+  # Returns a function which, when called repeatedly, returns the specified
+  # color with the alpha channel fading in and out.
+  @pulser: (r, g, b, seconds = 1) ->
+    start = Date.now()
+    ->
+      elapsed = (Date.now() - start) / 1000
+      alpha = (Math.sin(elapsed * 2 * Math.PI) + 1) / 2
+      Color.string(r, g, b, alpha)
