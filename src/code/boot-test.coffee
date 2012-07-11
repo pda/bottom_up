@@ -1,7 +1,7 @@
 require ["vendor/underscore", "vendor/jasmine"], ->
   require ["vendor/jasmine-html"], ->
 
-    subject_files = ["color"]
+    subject_files = ["color", "point"]
     spec_files = _(subject_files).map (f) -> "spec/#{f}_spec"
 
     require _.union(subject_files, spec_files), ->
