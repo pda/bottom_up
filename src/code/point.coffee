@@ -6,6 +6,9 @@ class @Point
   @at: (x, y) ->
     new Point(x, y)
 
+  toString: ->
+    "{x: #{@x}, y: #{@y}}"
+
   toTile: (size) ->
     Point.at(Math.floor(@x / size), Math.floor(@y / size))
 
