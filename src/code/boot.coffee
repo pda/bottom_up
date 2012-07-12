@@ -4,6 +4,7 @@ vendors = [
 
 classes = [
   "color"
+  "drawing_tools"
   "point"
 ]
 
