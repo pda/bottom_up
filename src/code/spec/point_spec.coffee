@@ -18,5 +18,5 @@ describe "Point", ->
       expect(Point.at(2, 5).fromTile(4)).toEqual(Point.at(8, 20))
 
   describe "toString()", ->
-    it "represents points as '{x: 2, y: 4}'", ->
-      expect(Point.at(2, 4).toString()).toEqual("{x: 2, y: 4}")
+    it "represents points as '2,4'", ->
+      expect(Point.at(2, 4).toString()).toEqual("2,4")
