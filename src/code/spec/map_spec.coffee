@@ -1,6 +1,6 @@
 describe "Map", ->
 
-  map = Map.fromAscii([
+  map = Map.fromAscii(32, [
     "### $"
     " @!$ "
     "! ###"

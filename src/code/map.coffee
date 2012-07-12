@@ -1,8 +1,10 @@
 class @Map
 
-  constructor: (@player, @walls, @monsters, @loot) ->
+  constructor: (@width, @height, @tileSize, @player, @walls, @monsters, @loot) ->
 
-  @fromAscii: (rows) ->
+  @fromAscii: (tileSize, rows) ->
+    width = tileSize * rows[0].length
+    height = tileSize * rows.length
     walls = []
     monsters = []
     loot = []
@@ -13,11 +15,11 @@ class @Map
         if char == "!" then monsters.push(Point.at(x, y))
         if char == "$" then loot.push(Point.at(x, y))
         if char == "@" then player = Point.at(x, y)
-    new Map(player, walls, monsters, loot)
+    new Map(width, height, tileSize, player, walls, monsters, loot)
 
   draw: (context) ->
-    _(new DrawingTools(context)).tap (d) ->
-      d.grid(WIDTH, HEIGHT, TILE_SIZE, Color.gray(0.9))
+    _(new DrawingTools(context)).tap (d) =>
+      d.grid(@width, @height, @tileSize, Color.gray(0.9))
       context.fillStyle = Color.gray()
-      _(map.walls).each (point) ->
-        d.square(point.fromTile(TILE_SIZE), TILE_SIZE)
+      _(@walls).each (point) =>
+        d.square(point.fromTile(@tileSize), @tileSize)
