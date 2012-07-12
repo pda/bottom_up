@@ -39,5 +39,5 @@ class @Color
     start = Date.now()
     ->
       elapsed = (Date.now() - start) / 1000
-      alpha = (Math.sin(elapsed * 2 * Math.PI) + 1) / 2
+      alpha = (Math.sin(elapsed * 2 * Math.PI / seconds) + 1) / 2
       Color.string(r, g, b, alpha)
