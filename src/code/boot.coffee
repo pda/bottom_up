@@ -3,6 +3,7 @@ vendors = [
 ]
 
 classes = [
+  "canvi"
   "color"
   "drawing_tools"
   "map"
