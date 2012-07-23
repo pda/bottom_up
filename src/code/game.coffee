@@ -25,12 +25,21 @@ HEIGHT = TILE_SIZE * MAP.length
 
 class Entity
   constructor: (@position) ->
+  # Move towards other point, return new distance remaining.
   moveTowards: (other, distance = 1) ->
     difference = other.subtract(@position)
-    if difference.length() > distance
-      @position = @position.add(difference.normalized().multiply(distance))
+    distance = Math.min(distance, difference.length())
+    if distance > 0
+      @moveTo(@position.add(difference.normalized().multiply(distance)))
+    return distance
+  moveTo: (position) ->
+    @previousPosition = @position
+    @position = position
   draw: (drawingTools) ->
     drawingTools.square(@position, @size, @color())
+
+class Wall extends Entity
+  size: TILE_SIZE
 
 class Monster extends Entity
   color: -> "red"
@@ -42,16 +51,23 @@ class Loot extends Entity
 
 class Player extends Entity
   color: -> "blue"
-  size: TILE_SIZE / 2
+  size: TILE_SIZE
+
+class NaviationDestination extends Entity
+  color: -> Color.string(128, 128, 255, 0.25)
+  size: TILE_SIZE
 
 @canvi = new Canvi(document, WIDTH, HEIGHT, "back", "main", "front")
 canvi.build()
 
-map = Map.fromAscii(TILE_SIZE, MAP)
+@map = Map.fromAscii(TILE_SIZE, MAP)
 map.draw(canvi.contexts["back"])
 
 c = canvi.contexts["main"]
 d = new DrawingTools(c)
+
+walls = _(map.walls).map (point) ->
+  new Wall(point.fromTile(TILE_SIZE))
 
 monsters = _(map.monsters).map (point) ->
   new Monster(point.fromTile(TILE_SIZE))
@@ -61,20 +77,23 @@ loot = _(map.loot).map (point) ->
 
 player = new Player(map.player.fromTile(TILE_SIZE))
 
-mousePoint = null
+navDestination = null
 window.addEventListener "click", (event) ->
-  mousePoint = Point.at(event.clientX, event.clientY)
+  navDestination = new NaviationDestination(Point.at(event.clientX, event.clientY))
 
 drawObjects = ->
   c.clearRect(0, 0, WIDTH, HEIGHT)
   player.draw(d)
   _(monsters).each (monster) -> monster.draw(d)
   _(loot).each (loot) -> loot.draw(d)
+  if navDestination then navDestination.draw(d)
 
 updateObjects = ->
   _(monsters).each (m) ->
     m.moveTowards(player.position, 2)
-  if mousePoint then player.moveTowards(mousePoint, 4)
+  if navDestination
+    if player.moveTowards(navDestination.position, 4) == 0
+      navDestination = null
 
 tick = ->
   updateObjects()
