@@ -35,6 +35,13 @@ class Entity
   moveTo: (position) ->
     @previousPosition = @position
     @position = position
+  avoid: (other) ->
+    if @isOverlapping(other)
+      @position = @previousPosition
+  isOverlapping: (other) ->
+    combinedHalfSize = @size / 2 + other.size / 2
+    Math.abs(@position.x - other.position.x) < combinedHalfSize &&
+      Math.abs(@position.y - other.position.y) < combinedHalfSize
   draw: (drawingTools) ->
     drawingTools.square(@position, @size, @color())
 
@@ -88,12 +95,18 @@ drawObjects = ->
   _(loot).each (loot) -> loot.draw(d)
   if navDestination then navDestination.draw(d)
 
+checkCollisions = ->
+  _(walls).each (wall) ->
+    player.avoid(wall)
+
+
 updateObjects = ->
   _(monsters).each (m) ->
     m.moveTowards(player.position, 2)
   if navDestination
     if player.moveTowards(navDestination.position, 4) == 0
       navDestination = null
+  checkCollisions()
 
 tick = ->
   updateObjects()
