@@ -1,5 +1,7 @@
 describe "Point", ->
 
+  p = (x, y) -> Point.at(x, y)
+
   it "holds x and y coordinates", ->
     point = new Point(10, 20)
     expect(point.x).toBe(10)
@@ -20,3 +22,23 @@ describe "Point", ->
   describe "toString()", ->
     it "represents points as '2,4'", ->
       expect(Point.at(2, 4).toString()).toEqual("2,4")
+
+  describe "add()", ->
+    it "(0,1) + (3,-2) = (3,-1)", ->
+      expect(p(0,1).add(p(3,-2))).toEqual(p(3,-1))
+
+  describe "subtract()", ->
+    it "(4,3) - (1,2) = (3,1)", ->
+      expect(p(4,3).subtract(p(1,2))).toEqual(p(3,1))
+
+  describe "multiply()", ->
+    it "(2,4) * 4 = (8,16)", ->
+      expect(p(2,4).multiply(4)).toEqual(p(8,16))
+
+  describe "length()", ->
+    it "is 5 for (4,3)", ->
+      expect(p(4,3).length()).toEqual(5)
+
+  describe "normalized()", ->
+    it "is (3/5,4/5) for (3,4)", ->
+      expect(p(3,4).normalized()).toEqual(p(3/5, 4/5))
