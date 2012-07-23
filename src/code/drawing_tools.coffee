@@ -19,4 +19,5 @@ class @DrawingTools
 
   square: (point, size, style) ->
     if style then @c.fillStyle = style
-    @c.fillRect(point.x, point.y, size, size)
+    half = size / 2
+    @c.fillRect(point.x - half, point.y - half, size, size)

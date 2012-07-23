@@ -13,7 +13,8 @@ class @Point
     Point.at(Math.floor(@x / size), Math.floor(@y / size))
 
   fromTile: (size) ->
-    Point.at(@x * size, @y * size)
+    half = size / 2
+    Point.at(@x * size + half, @y * size + half)
 
   add: (other) ->
     Point.at(@x + other.x, @y + other.y)
