@@ -16,6 +16,9 @@ class @Point
     half = size / 2
     Point.at(@x * size + half, @y * size + half)
 
+  isEqual: (other) ->
+    other.x == @x && other.y == @y
+
   add: (other) ->
     Point.at(@x + other.x, @y + other.y)
 

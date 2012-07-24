@@ -29,6 +29,13 @@ describe "Point", ->
     it "(0,1) + (3,-2) = (3,-1)", ->
       expect(p(0,1).add(p(3,-2))).toEqual(p(3,-1))
 
+  describe "isEqual(other)", ->
+    it "is true for same coordinates", ->
+      expect(p(8, 8).isEqual(p(8, 8))).toBe(true)
+    it "is false for different coordinates", ->
+      expect(p(8, 8).isEqual(p(8, 0))).toBe(false)
+
+
   describe "subtract()", ->
     it "(4,3) - (1,2) = (3,1)", ->
       expect(p(4,3).subtract(p(1,2))).toEqual(p(3,1))
