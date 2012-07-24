@@ -4,6 +4,7 @@ require ["vendor/underscore", "vendor/jasmine"], ->
     subject_files = [
       "canvi"
       "color"
+      "line"
       "map"
       "point"
     ]
