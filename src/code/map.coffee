@@ -22,4 +22,4 @@ class @Map
       d.grid(@width, @height, @tileSize, Color.gray(0.9))
       context.fillStyle = Color.gray()
       _(@walls).each (point) =>
-        d.square(point.fromTile(@tileSize), @tileSize)
+        d.square(point.fromTile(@tileSize), @tileSize, Color.gray(0.8))
