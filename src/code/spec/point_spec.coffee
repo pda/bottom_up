@@ -16,8 +16,10 @@ describe "Point", ->
       expect(Point.at(10, 20).toTile(4)).toEqual(Point.at(2, 5))
 
   describe "fromTile(tileSize)", ->
-    it "converts 2,5 to 8,20 for tileSize = 4", ->
-      expect(Point.at(2, 5).fromTile(4)).toEqual(Point.at(8, 20))
+    it "converts 0,0 to 8,8 for tileSize = 16", ->
+      expect(Point.at(0, 0).fromTile(16)).toEqual(Point.at(8, 8))
+    it "converts 2,5 to 10,22 for tileSize = 4", ->
+      expect(Point.at(2, 5).fromTile(4)).toEqual(Point.at(10, 22))
 
   describe "toString()", ->
     it "represents points as '2,4'", ->
