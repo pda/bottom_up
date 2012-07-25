@@ -38,13 +38,6 @@ class Entity
   moveTo: (position) ->
     @previousPosition = @position
     @position = position
-  avoid: (other) ->
-    if @isOverlapping(other)
-      @position = @previousPosition
-  isOverlapping: (other) ->
-    combinedHalfSize = @size / 2 + other.size / 2
-    Math.abs(@position.x - other.position.x) < combinedHalfSize &&
-      Math.abs(@position.y - other.position.y) < combinedHalfSize
   draw: (drawingTools) ->
     drawingTools.square(@position, @size, @color())
 
@@ -73,55 +66,7 @@ canvi.build()
 @map = Map.fromAscii(TILE_SIZE, MAP)
 map.draw(canvi.contexts["back"])
 
-c = canvi.contexts["main"]
-d = new DrawingTools(c)
-
-@wallKeys = {}
-_(map.walls).each (point) ->
-  wallKeys[point.toString()] = true
-
-# TODO: refactor this, obviously.
-@wallFaces = []
-halfTile = TILE_SIZE / 2
-_(map.walls).each (tilePoint) ->
-  screenPoint = tilePoint.fromTile(TILE_SIZE)
-  unless wallKeys[tilePoint.add(Point.at(0, -1))] || tilePoint.y == 0 # above
-    wallFaces.push(new Line(
-      Point.at(screenPoint.x - halfTile, screenPoint.y - halfTile)
-      Point.at(screenPoint.x + halfTile, screenPoint.y - halfTile)
-    ))
-  unless wallKeys[tilePoint.add(Point.at(1, 0))] || tilePoint.x == WIDTH_TILES - 1 # right
-    wallFaces.push(new Line(
-      Point.at(screenPoint.x + halfTile, screenPoint.y - halfTile)
-      Point.at(screenPoint.x + halfTile, screenPoint.y + halfTile)
-    ))
-  unless wallKeys[tilePoint.add(Point.at(0, 1))] || tilePoint.y == HEIGHT_TILES - 1 # below
-    wallFaces.push(new Line(
-      Point.at(screenPoint.x - halfTile, screenPoint.y + halfTile)
-      Point.at(screenPoint.x + halfTile, screenPoint.y + halfTile)
-    ))
-  unless wallKeys[tilePoint.add(Point.at(-1, 0))] || tilePoint.x == 0 # left
-    wallFaces.push(new Line(
-      Point.at(screenPoint.x - halfTile, screenPoint.y - halfTile)
-      Point.at(screenPoint.x - halfTile, screenPoint.y + halfTile)
-    ))
-
-wallFacesMerged = []
-wallFacesDiscarded = {}
-_(wallFaces).each (line) ->
-  if wallFacesDiscarded[line.toString()] then return
-  _(wallFaces).each (otherLine) ->
-    if line.isContinuation(otherLine)
-      wallFacesDiscarded[otherLine.toString()] = true
-      line = line.merge(otherLine)
-  wallFacesMerged.push(line)
-
-_(wallFacesMerged).each (line) ->
-  _(new DrawingTools(canvi.contexts["back"])).tap (d) ->
-    d.c.lineWidth = 4
-    d.c.strokeStyle = Color.gray(0.6)
-    d.line(line.toArray()...)
-    _(line.toArray()).each (p) -> d.square(p, 6, Color.gray(0.6))
+d = new DrawingTools(canvi.contexts["main"])
 
 monsters = _(map.monsters).map (point) ->
   new Monster(point.fromTile(TILE_SIZE))
@@ -136,14 +81,11 @@ window.addEventListener "click", (event) ->
   navDestination = new NaviationDestination(Point.at(event.clientX, event.clientY))
 
 drawObjects = ->
-  c.clearRect(0, 0, WIDTH, HEIGHT)
+  d.c.clearRect(0, 0, WIDTH, HEIGHT)
   player.draw(d)
   _(monsters).each (monster) -> monster.draw(d)
   _(loot).each (loot) -> loot.draw(d)
   if navDestination then navDestination.draw(d)
-
-checkCollisions = ->
-
 
 updateObjects = ->
   _(monsters).each (m) ->
@@ -151,7 +93,6 @@ updateObjects = ->
   if navDestination
     if player.moveTowards(navDestination.position, 4) == 0
       navDestination = null
-  checkCollisions()
 
 tick = ->
   updateObjects()
