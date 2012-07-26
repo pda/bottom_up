@@ -84,6 +84,26 @@ loot = _(map.loot).map (point) ->
 
 player = new Player(map.player.fromTile(TILE_SIZE))
 
+playerWallCollisionDetection = ->
+  _(map.edges).each (edge) ->
+    if edge.isHorizontal()
+      if (player.right > edge.from.x && player.left < edge.to.x)
+        if player.bottom > edge.from.y && player.top < edge.to.y
+          if player.position.y < edge.from.y # above
+            y = edge.from.y - player.halfSize
+          else # below
+            y = edge.from.y + player.halfSize
+          player.setPosition(Point.at(player.position.x, y))
+    else if edge.isVertical()
+      if (player.bottom > edge.from.y && player.top < edge.to.y)
+        if player.right > edge.from.x && player.left < edge.to.x
+          if player.position.x < edge.from.x # left
+            x = edge.from.x - player.halfSize
+          else # right
+            x = edge.from.x + player.halfSize
+          player.setPosition(Point.at(x, player.position.y))
+
+
 navDestination = null
 window.addEventListener "click", (event) ->
   navDestination = new NaviationDestination(Point.at(event.clientX, event.clientY))
@@ -101,6 +121,7 @@ updateObjects = ->
   if navDestination
     if player.moveTowards(navDestination.position, 4) == 0
       navDestination = null
+  playerWallCollisionDetection()
 
 tick = ->
   updateObjects()
