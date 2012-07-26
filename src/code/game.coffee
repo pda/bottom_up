@@ -28,6 +28,8 @@ HEIGHT = TILE_SIZE * HEIGHT_TILES
 
 class Entity
   constructor: (@position) ->
+    @halfSize = @size / 2
+    @sizeDelta = Point.at(@halfSize, @halfSize)
   # Move towards other point, return new distance remaining.
   moveTowards: (other, distance = 1) ->
     difference = other.subtract(@position)
@@ -35,9 +37,15 @@ class Entity
     if distance > 0
       @moveTo(@position.add(difference.normalized().multiply(distance)))
     return distance
+  setPosition: (position) ->
+    @position = position
+    @top = position.subtract(@sizeDelta).y
+    @bottom = position.add(@sizeDelta).y
+    @left = position.subtract(@sizeDelta).x
+    @right = position.add(@sizeDelta).x
   moveTo: (position) ->
     @previousPosition = @position
-    @position = position
+    @setPosition(position)
   draw: (drawingTools) ->
     drawingTools.square(@position, @size, @color())
 
