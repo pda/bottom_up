@@ -84,24 +84,24 @@ loot = _(map.loot).map (point) ->
 
 player = new Player(map.player.fromTile(TILE_SIZE))
 
-playerWallCollisionDetection = ->
+wallCollisionDetection = (entity) ->
   _(map.edges).each (edge) ->
     if edge.isHorizontal()
-      if (player.right > edge.from.x && player.left < edge.to.x)
-        if player.bottom > edge.from.y && player.top < edge.to.y
-          if player.position.y < edge.from.y # above
-            y = edge.from.y - player.halfSize
+      if (entity.right > edge.from.x && entity.left < edge.to.x)
+        if entity.bottom > edge.from.y && entity.top < edge.to.y
+          if entity.position.y < edge.from.y # above
+            y = edge.from.y - entity.halfSize
           else # below
-            y = edge.from.y + player.halfSize
-          player.setPosition(Point.at(player.position.x, y))
+            y = edge.from.y + entity.halfSize
+          entity.setPosition(Point.at(entity.position.x, y))
     else if edge.isVertical()
-      if (player.bottom > edge.from.y && player.top < edge.to.y)
-        if player.right > edge.from.x && player.left < edge.to.x
-          if player.position.x < edge.from.x # left
-            x = edge.from.x - player.halfSize
+      if (entity.bottom > edge.from.y && entity.top < edge.to.y)
+        if entity.right > edge.from.x && entity.left < edge.to.x
+          if entity.position.x < edge.from.x # left
+            x = edge.from.x - entity.halfSize
           else # right
-            x = edge.from.x + player.halfSize
-          player.setPosition(Point.at(x, player.position.y))
+            x = edge.from.x + entity.halfSize
+          entity.setPosition(Point.at(x, entity.position.y))
 
 
 navDestination = null
@@ -111,17 +111,19 @@ window.addEventListener "click", (event) ->
 drawObjects = ->
   d.c.clearRect(0, 0, WIDTH, HEIGHT)
   player.draw(d)
-  _(monsters).each (monster) -> monster.draw(d)
+  _(monsters).each (monster) ->
+    monster.draw(d)
   _(loot).each (loot) -> loot.draw(d)
   if navDestination then navDestination.draw(d)
 
 updateObjects = ->
-  _(monsters).each (m) ->
-    m.moveTowards(player.position, 2)
+  _(monsters).each (monster) ->
+    monster.moveTowards(player.position, 2)
+    wallCollisionDetection(monster)
   if navDestination
     if player.moveTowards(navDestination.position, 4) == 0
       navDestination = null
-  playerWallCollisionDetection()
+  wallCollisionDetection(player)
 
 tick = ->
   updateObjects()
