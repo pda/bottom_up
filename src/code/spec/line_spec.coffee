@@ -68,3 +68,13 @@ describe "Line", ->
       a = l(2, 2, 4, 4)
       b = l(3, 3, 5, 5)
       expect(a.intersects(b)).toBe(false)
+
+  describe "#intersection", ->
+    it "is 2,2 for 1,1:3,3 and 1,3:3,1", ->
+      a = l(1, 1, 3, 3)
+      b = l(1, 3, 3, 1)
+      expect(a.intersection(b)).toEqual(Point.at(2, 2))
+    it "is 2,4 for 0,4:4,4 and 2,0:2,4", ->
+      a = l(0, 4, 4, 4)
+      b = l(2, 0, 2, 4)
+      expect(a.intersection(b)).toEqual(Point.at(2, 4))

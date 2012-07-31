@@ -21,6 +21,23 @@ class @Line
       ((b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x))
     return (0 <= r && r <= 1) && (0 <= s && s <= 1)
 
+  # http://en.wikipedia.org/wiki/Line-line_intersection
+  # Line intersection, not segment; result may be beyond either segment.
+  intersection: (other) ->
+    x1 = @from.x
+    x2 = @to.x
+    x3 = other.from.x
+    x4 = other.to.x
+    y1 = @from.y
+    y2 = @to.y
+    y3 = other.from.y
+    y4 = other.to.y
+    x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) /
+      ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
+    y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) /
+      ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
+    Point.at(x, y)
+
   # Single-direction continuation test.
   # Other lines "from" must start at this lines "to" position.
   isContinuation: (other) ->
