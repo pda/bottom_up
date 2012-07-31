@@ -38,8 +38,10 @@ class Entity
     if distance > 0
       @velocity = difference.normalized().multiply(distance)
     else
-      @velocity = Point.zero()
+      @stop()
     return distance
+  stop: ->
+    @velocity = Point.zero()
   update: ->
     @moveTo(@position.add(@velocity))
   setPosition: (position) ->
@@ -138,7 +140,11 @@ drawObjects = ->
 
 updateObjects = ->
   _(monsters).each (monster) ->
-    monster.moveTowards(player.position, 2)
+    line = new Line(monster.position, player.position)
+    if _(map.edges).any((edge) -> line.intersects(edge))
+      monster.stop()
+    else
+      monster.moveTowards(player.position, 2)
     wallCollisionDetection(monster)
     monster.update()
   if navDestination
