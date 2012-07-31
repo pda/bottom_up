@@ -113,8 +113,13 @@ drawObjects = ->
   player.draw(d)
   _(monsters).each (monster) ->
     monster.draw(d)
+    d.c.strokeStyle = Color.string(255, 0, 0, 0.2)
+    d.line(monster.position, player.position)
   _(loot).each (loot) -> loot.draw(d)
-  if navDestination then navDestination.draw(d)
+  if navDestination
+    navDestination.draw(d)
+    d.c.strokeStyle = Color.string(0, 0, 255, 0.2)
+    d.line(player.position, navDestination.position)
 
 updateObjects = ->
   _(monsters).each (monster) ->
