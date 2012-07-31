@@ -6,6 +6,9 @@ class @Point
   @at: (x, y) ->
     new Point(x, y)
 
+  @zero: ->
+    new Point(0, 0)
+
   toString: ->
     [@x, @y].join(",")
 

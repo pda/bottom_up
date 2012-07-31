@@ -11,6 +11,10 @@ describe "Point", ->
     it "constructs a Point", ->
       expect(Point.at(2, 4)).toEqual(new Point(2, 4))
 
+  describe ".zero()", ->
+    it "constructs a zero Point", ->
+      expect(Point.zero()).toEqual(new Point(0, 0))
+
   describe "toTile(tileSize)", ->
     it "converts 10,20 to 2,5 for tileSize = 4", ->
       expect(Point.at(10, 20).toTile(4)).toEqual(Point.at(2, 5))
