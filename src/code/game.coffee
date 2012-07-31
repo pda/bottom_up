@@ -30,13 +30,18 @@ class Entity
   constructor: (@position) ->
     @halfSize = @size / 2
     @sizeDelta = Point.at(@halfSize, @halfSize)
+    @velocity = Point.zero()
   # Move towards other point, return new distance remaining.
   moveTowards: (other, distance = 1) ->
     difference = other.subtract(@position)
     distance = Math.min(distance, difference.length())
     if distance > 0
-      @moveTo(@position.add(difference.normalized().multiply(distance)))
+      @velocity = difference.normalized().multiply(distance)
+    else
+      @velocity = Point.zero()
     return distance
+  update: ->
+    @moveTo(@position.add(@velocity))
   setPosition: (position) ->
     @position = position
     @top = position.subtract(@sizeDelta).y
@@ -114,20 +119,32 @@ drawObjects = ->
   _(monsters).each (monster) ->
     monster.draw(d)
     d.c.strokeStyle = Color.string(255, 0, 0, 0.2)
-    d.line(monster.position, player.position)
+    line = new Line(monster.position, player.position)
+    d.line(line.from, line.to)
+    _(map.edges).each (edge) ->
+      if line.intersects(edge)
+        intersection = line.intersection(edge)
+        d.square(intersection, 8, Color.string(255, 0, 0, 0.2))
   _(loot).each (loot) -> loot.draw(d)
   if navDestination
     navDestination.draw(d)
     d.c.strokeStyle = Color.string(0, 0, 255, 0.2)
-    d.line(player.position, navDestination.position)
+    line = new Line(player.position, navDestination.position)
+    d.line(line.from, line.to)
+    _(map.edges).each (edge) ->
+      if line.intersects(edge)
+        intersection = line.intersection(edge)
+        d.square(intersection, 8, Color.string(255, 0, 0, 0.2))
 
 updateObjects = ->
   _(monsters).each (monster) ->
     monster.moveTowards(player.position, 2)
     wallCollisionDetection(monster)
+    monster.update()
   if navDestination
     if player.moveTowards(navDestination.position, 4) == 0
       navDestination = null
+  player.update()
   wallCollisionDetection(player)
 
 tick = ->
