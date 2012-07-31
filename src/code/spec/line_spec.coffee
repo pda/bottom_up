@@ -50,3 +50,21 @@ describe "Line", ->
 
     it "merges with 10,40:10:50 to form 10,20:10,50", ->
       expect(line.merge(l(10,40,10,50))).toEqual(l(10,20,10,50))
+
+  describe "#intersects", ->
+    it "detects intersection between 10,10:30,40 and 10,20:40,10", ->
+      a = l(10, 10, 30, 40)
+      b = l(10, 20, 40, 10)
+      expect(a.intersects(b)).toBe(true)
+    it "detects no intersection between 10,10:30,40 and 30,20:40,10", ->
+      a = l(10, 10, 30, 40)
+      b = l(30, 20, 40, 10)
+      expect(a.intersects(b)).toBe(false)
+    it "detects no intersection between 1,1:2,2 and 3,3:4,4 (continuation)", ->
+      a = l(1, 1, 2, 2)
+      b = l(3, 3, 4, 4)
+      expect(a.intersects(b)).toBe(false)
+    it "detects no intersection between 2,2:4,4 and 3,3:5,5 (overlapping segments of same line)", ->
+      a = l(2, 2, 4, 4)
+      b = l(3, 3, 5, 5)
+      expect(a.intersects(b)).toBe(false)
