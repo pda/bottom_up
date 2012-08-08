@@ -94,3 +94,11 @@ describe "Line", ->
       expect(l(5,3,5,7).nearestIntersection(grid)).toEqual(p(5,4))
     it "is 4,5 for 5,7:5,3 (y-negative pointing line)", ->
       expect(l(5,7,5,3).nearestIntersection(grid)).toEqual(p(5,6))
+
+  describe "#length", ->
+    it "is 1 for 0,0:0,1", ->
+      expect(l(0,0,0,1).length()).toEqual(1)
+    it "is 5 for 1,1:5,4", ->
+      expect(l(1,1,5,4).length()).toEqual(5)
+    it "is 5 for 5,4:1,1", ->
+      expect(l(5,4,1,1).length()).toEqual(5)

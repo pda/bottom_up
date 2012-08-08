@@ -46,6 +46,9 @@ class @Line
       .first()
       .value()
 
+  length: ->
+    @to.subtract(@from).length()
+
   # Single-direction continuation test.
   # Other lines "from" must start at this lines "to" position.
   isContinuation: (other) ->
