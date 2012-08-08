@@ -38,6 +38,13 @@ class @Line
       ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
     Point.at(x, y)
 
+  nearestIntersectingLine: (others) ->
+    _.chain(others)
+      .filter((other) => @intersects(other))
+      .sortBy((other) => @intersection(other).subtract(@from).length())
+      .first()
+      .value()
+
   nearestIntersection: (others) ->
     _.chain(others)
       .filter((other) => @intersects(other))
