@@ -78,3 +78,19 @@ describe "Line", ->
       a = l(0, 4, 4, 4)
       b = l(2, 0, 2, 4)
       expect(a.intersection(b)).toEqual(Point.at(2, 4))
+
+  describe "#nearestIntersection against 4x4 grid", ->
+    grid = [
+      l(0,2,10,2), l(0,4,10,4), l(0,6,10,6), l(0,8,10,8), # horizontal
+      l(2,0,2,10), l(4,0,4,10), l(6,0,6,10), l(8,0,8,10), # vertical
+    ]
+    it "is undefined when no intersections", ->
+      expect(l(0,0,1,1).nearestIntersection(grid)).toBe(undefined)
+    it "is 4,5 for 3,5:7,5 (right-pointing line)", ->
+      expect(l(3,5,7,5).nearestIntersection(grid)).toEqual(p(4,5))
+    it "is 6,5 for 7,5:3,5 (left-pointing line)", ->
+      expect(l(7,5,3,5).nearestIntersection(grid)).toEqual(p(6,5))
+    it "is 5,4 for 5,3:5,7 (y-positive pointing line)", ->
+      expect(l(5,3,5,7).nearestIntersection(grid)).toEqual(p(5,4))
+    it "is 4,5 for 5,7:5,3 (y-negative pointing line)", ->
+      expect(l(5,7,5,3).nearestIntersection(grid)).toEqual(p(5,6))
