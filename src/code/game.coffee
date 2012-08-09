@@ -107,7 +107,7 @@ updateEntities = (entities, timeDelta) ->
           player.position.toTile(TILE_SIZE),
           nav.position.toTile(TILE_SIZE),
           map.walls,
-          256
+          128
         )).map (point) -> point.fromTile(TILE_SIZE)
       else
         entities.path = []
