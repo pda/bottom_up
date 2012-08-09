@@ -46,38 +46,18 @@ class NaviationDestination extends BoxEntity
   size: TILE_SIZE
 
 ##
-# "Misc"
-
-@canvi = new Canvi(document, WIDTH, HEIGHT, "back", "main", "front")
-canvi.build()
-
-@map = Map.fromAscii(TILE_SIZE, MAP)
-map.draw(canvi.contexts["back"])
-
-d = new DrawingTools(canvi.contexts["main"])
-
-monsters = _(map.monsters).map (point) ->
-  new Monster(point.fromTile(TILE_SIZE))
-
-loot = _(map.loot).map (point) ->
-  new Loot(point.fromTile(TILE_SIZE))
-
-@player = new Player(map.player.fromTile(TILE_SIZE))
-
-navDestination = null
-window.addEventListener "click", (event) ->
-  navDestination = new NaviationDestination(Point.at(event.clientX, event.clientY))
-
-##
 # Drawing
-drawObjects = ->
-  d.c.clearRect(0, 0, WIDTH, HEIGHT)
+drawEntities = (entities, drawingTools) ->
+  player = entities.player
+  d = drawingTools
+
+  d.c.clearRect(0, 0, d.c.canvas.width, d.c.canvas.height)
 
   # Player!
   player.draw(d)
 
   # Monsters!
-  _(monsters).each (monster) ->
+  _(entities.monsters).each (monster) ->
     monster.draw(d)
     # strong line from monster to collision point.
     line = new Line(monster.position, player.position)
@@ -87,12 +67,12 @@ drawObjects = ->
     d.line(line, strokeStyle: Color.string(255, 0, 0, 0.5))
 
   # Loot!
-  _(loot).each (loot) -> loot.draw(d)
+  _(entities.loot).each (loot) -> loot.draw(d)
 
   # Navigation destination!
-  if navDestination
-    navDestination.draw(d)
-    line = new Line(player.position, navDestination.position)
+  if (nav = entities.navDestination)
+    nav.draw(d)
+    line = new Line(player.position, nav.position)
     d.line(line, strokeStyle: Color.string(0, 0, 255, 0.2))
     if (point = line.nearestIntersection(map.edges))
       d.square(point, 8, Color.string(255, 0, 0, 0.4))
@@ -103,31 +83,57 @@ drawObjects = ->
 
 ##
 # Updating
-updateObjects = (timeDelta) ->
+updateEntities = (entities, timeDelta) ->
+  player = entities.player
 
   # Monsters!
-  _(monsters).each (monster) ->
+  _(entities.monsters).each (monster) ->
     line = new Line(monster.position, player.position)
     monster.moveTowards(player.position, 128, timeDelta)
     monster.collider.withLines(map.edges, timeDelta)
     monster.update(timeDelta)
 
   # Player!
-  if navDestination
-    if player.moveTowards(navDestination.position, 256, timeDelta)
-      navDestination = null
+  if (nav = entities.navDestination)
+    if player.moveTowards(nav.position, 256, timeDelta)
+      entities.navDestination = null
   player.collider.withLines(map.edges, timeDelta)
   player.update(timeDelta)
 
 ##
-# Ticking
-timeLast = (Date.now() / 1000) - (1 / 60)
-tick = ->
-  timeThis = Date.now() / 1000
-  timeDelta = timeThis - timeLast
-  timeLast = timeThis
-  updateObjects(timeDelta)
-  drawObjects()
-  webkitRequestAnimationFrame(tick)
+# Bootstrap
+(->
+  @canvi = new Canvi(document, WIDTH, HEIGHT, "back", "main", "front")
+  canvi.build()
 
-tick()
+  @map = Map.fromAscii(TILE_SIZE, MAP)
+  map.draw(canvi.contexts["back"])
+
+  drawingTools = new DrawingTools(canvi.contexts["main"])
+
+  entities = {}
+
+  entities.monsters = _(map.monsters).map (point) ->
+    new Monster(point.fromTile(TILE_SIZE))
+
+  entities.loot = _(map.loot).map (point) ->
+    new Loot(point.fromTile(TILE_SIZE))
+
+  entities.player = new Player(map.player.fromTile(TILE_SIZE))
+
+  window.addEventListener "click", (event) ->
+    entities.navDestination = new NaviationDestination(Point.at(event.clientX, event.clientY))
+
+  ##
+  # Ticking
+  timeLast = (Date.now() / 1000) - (1 / 60)
+  tick = ->
+    timeThis = Date.now() / 1000
+    timeDelta = timeThis - timeLast
+    timeLast = timeThis
+    updateEntities(entities, timeDelta)
+    drawEntities(entities, drawingTools)
+    webkitRequestAnimationFrame(tick)
+
+  tick()
+)()
