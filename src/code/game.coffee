@@ -32,32 +32,35 @@ class Entity
     @sizeDelta = Point.at(@halfSize, @halfSize)
     @velocity = Point.zero()
   # Move towards other point, return new distance remaining.
-  moveTowards: (other, distance = 1) ->
+  moveTowards: (other, timeDelta, distance = 1) ->
     difference = other.subtract(@position)
     distance = Math.min(distance, difference.length())
     if distance > 0
-      @velocity = difference.normalized().multiply(distance)
+      @velocity = difference.normalized().multiply(distance / timeDelta)
     else
       @stop()
     return distance
   stop: ->
     @velocity = Point.zero()
-  update: ->
-    @moveTo(@position.add(@velocity))
+  update: (timeDelta) ->
+    @moveTo(@position.add(@velocity.multiply(timeDelta)))
   setPosition: (position) ->
     @position = position
     @top = position.subtract(@sizeDelta).y
     @bottom = position.add(@sizeDelta).y
     @left = position.subtract(@sizeDelta).x
     @right = position.add(@sizeDelta).x
+    @corners = [
+      Point.at(@left, @top),
+      Point.at(@right, @top),
+      Point.at(@left, @bottom),
+      Point.at(@right, @bottom)
+    ]
   moveTo: (position) ->
     @previousPosition = @position
     @setPosition(position)
   draw: (drawingTools) ->
     drawingTools.square(@position, @size, @color())
-
-class Wall extends Entity
-  size: TILE_SIZE
 
 class Monster extends Entity
   color: -> "red"
@@ -89,72 +92,89 @@ monsters = _(map.monsters).map (point) ->
 loot = _(map.loot).map (point) ->
   new Loot(point.fromTile(TILE_SIZE))
 
-player = new Player(map.player.fromTile(TILE_SIZE))
-
-wallCollisionDetection = (entity) ->
-  _(map.edges).each (edge) ->
-    if edge.isHorizontal()
-      if (entity.right > edge.from.x && entity.left < edge.to.x)
-        if entity.bottom > edge.from.y && entity.top < edge.to.y
-          if entity.position.y < edge.from.y # above
-            y = edge.from.y - entity.halfSize
-          else # below
-            y = edge.from.y + entity.halfSize
-          entity.setPosition(Point.at(entity.position.x, y))
-    else if edge.isVertical()
-      if (entity.bottom > edge.from.y && entity.top < edge.to.y)
-        if entity.right > edge.from.x && entity.left < edge.to.x
-          if entity.position.x < edge.from.x # left
-            x = edge.from.x - entity.halfSize
-          else # right
-            x = edge.from.x + entity.halfSize
-          entity.setPosition(Point.at(x, entity.position.y))
-
+@player = new Player(map.player.fromTile(TILE_SIZE))
 
 navDestination = null
 window.addEventListener "click", (event) ->
   navDestination = new NaviationDestination(Point.at(event.clientX, event.clientY))
 
+##
+# Colliding
+wallCollisionDetection = (entity, timeDelta) ->
+  _(entity.corners).each (corner) ->
+    movement = new Line(corner, corner.add(entity.velocity.multiply(timeDelta)))
+    if (wall = movement.nearestIntersectingLine(map.edges))
+      #wallDelta = movement.intersection(wall).subtract(corner)
+      if wall.isHorizontal()
+        entity.velocity.y = 0
+      else if wall.isVertical()
+        entity.velocity.x = 0
+
+##
+# Drawing
 drawObjects = ->
   d.c.clearRect(0, 0, WIDTH, HEIGHT)
+
+  # Player!
   player.draw(d)
+
+  # Monsters!
   _(monsters).each (monster) ->
     monster.draw(d)
-    d.c.strokeStyle = Color.string(255, 0, 0, 0.2)
+
+    # faint red line from monster to player.
+    d.c.strokeStyle = Color.string(255, 0, 0, 0.05)
     line = new Line(monster.position, player.position)
     d.line(line.from, line.to)
-    _(map.edges).each (edge) ->
-      if line.intersects(edge)
-        intersection = line.intersection(edge)
-        d.square(intersection, 8, Color.string(255, 0, 0, 0.2))
+
+    # strong line from monster to collision point.
+    if (point = line.nearestIntersection(map.edges))
+      line.to = point
+      d.square(point, 8, Color.string(255, 0, 0, 0.4))
+    d.c.strokeStyle = Color.string(255, 0, 0, 0.5)
+    d.line(line.from, line.to)
+
+  # Loot!
   _(loot).each (loot) -> loot.draw(d)
+
+  # Navigation destination!
   if navDestination
     navDestination.draw(d)
     d.c.strokeStyle = Color.string(0, 0, 255, 0.2)
     line = new Line(player.position, navDestination.position)
     d.line(line.from, line.to)
+    if (point = line.nearestIntersection(map.edges))
+      d.square(point, 8, Color.string(255, 0, 0, 0.4))
     _(map.edges).each (edge) ->
       if line.intersects(edge)
         intersection = line.intersection(edge)
         d.square(intersection, 8, Color.string(255, 0, 0, 0.2))
 
-updateObjects = ->
+##
+# Updating
+updateObjects = (timeDelta) ->
   _(monsters).each (monster) ->
     line = new Line(monster.position, player.position)
     if _(map.edges).any((edge) -> line.intersects(edge))
       monster.stop()
     else
-      monster.moveTowards(player.position, 2)
+      monster.moveTowards(player.position, timeDelta, 1)
     wallCollisionDetection(monster)
-    monster.update()
+    monster.update(timeDelta)
   if navDestination
-    if player.moveTowards(navDestination.position, 4) == 0
+    if player.moveTowards(navDestination.position, timeDelta, 8) == 0
       navDestination = null
-  player.update()
-  wallCollisionDetection(player)
+  wallCollisionDetection(player, timeDelta)
+  player.update(timeDelta)
 
+##
+# Ticking
+timeLast = (Date.now() / 1000) - (1 / 60)
 tick = ->
-  updateObjects()
+  timeThis = Date.now() / 1000
+  timeDelta = timeThis - timeLast
+  timeLast = timeThis
+  updateObjects(timeDelta)
   drawObjects()
   webkitRequestAnimationFrame(tick)
 
