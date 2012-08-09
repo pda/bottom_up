@@ -6,8 +6,10 @@ class @Point
   @at: (x, y) ->
     new Point(x, y)
 
-  @zero: ->
-    new Point(0, 0)
+  @Zero: new Point(0, 0)
+
+  isZero: ->
+    @x == 0 && @y == 0
 
   toString: ->
     [@x, @y].join(",")

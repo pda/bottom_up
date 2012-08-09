@@ -26,6 +26,9 @@ HEIGHT_TILES = MAP.length
 WIDTH = TILE_SIZE * WIDTH_TILES
 HEIGHT = TILE_SIZE * HEIGHT_TILES
 
+##
+# Subclasses
+
 class Monster extends BoxEntity
   color: -> "red"
   size: TILE_SIZE / 2
@@ -41,6 +44,9 @@ class Player extends BoxEntity
 class NaviationDestination extends BoxEntity
   color: -> Color.string(128, 128, 255, 0.25)
   size: TILE_SIZE
+
+##
+# "Misc"
 
 @canvi = new Canvi(document, WIDTH, HEIGHT, "back", "main", "front")
 canvi.build()
@@ -122,11 +128,11 @@ updateObjects = (timeDelta) ->
     if _(map.edges).any((edge) -> line.intersects(edge))
       monster.stop()
     else
-      monster.moveTowards(player.position, timeDelta, 1)
+      monster.moveTowards(player.position, 128, timeDelta)
     wallCollisionDetection(monster)
     monster.update(timeDelta)
   if navDestination
-    if player.moveTowards(navDestination.position, timeDelta, 8) == 0
+    if player.moveTowards(navDestination.position, 256, timeDelta)
       navDestination = null
   wallCollisionDetection(player, timeDelta)
   player.update(timeDelta)
