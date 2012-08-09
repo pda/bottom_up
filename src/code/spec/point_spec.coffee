@@ -59,3 +59,5 @@ describe "Point", ->
   describe "normalized()", ->
     it "is (3/5,4/5) for (3,4)", ->
       expect(p(3,4).normalized()).toEqual(p(3/5, 4/5))
+    it "is (0,0) for (0,0) (divide-by-zero, technically undefined)", ->
+      expect(p(0,0).normalized()).toEqual(p(0, 0))

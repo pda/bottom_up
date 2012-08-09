@@ -39,4 +39,4 @@ class @Point
 
   normalized: ->
     l = @length()
-    Point.at(@x / l, @y / l)
+    if l > 0 then Point.at(@x / l, @y / l) else this
