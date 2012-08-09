@@ -72,16 +72,15 @@ drawEntities = (entities, drawingTools) ->
   # Navigation destination!
   if (nav = entities.navDestination)
     nav.draw(d)
+    color = Color.string(0, 0, 255, 0.2)
     line = new Line(player.position, nav.position)
-    d.line(line, strokeStyle: Color.string(0, 0, 255, 0.2))
-    if (point = line.nearestIntersection(map.edges))
-      d.square(point, 8, Color.string(255, 0, 0, 0.4))
-    _(map.edges).each (edge) ->
-      if line.intersects(edge)
-        intersection = line.intersection(edge)
-        d.square(intersection, 8, Color.string(255, 0, 0, 0.2))
-    _(entities.path).each (point) ->
-      d.square(point, TILE_SIZE, Color.gray(0.5, 0.2))
+    if entities.path.length
+      _(entities.path).inject (memo, point) ->
+        if memo then d.line(new Line(memo, point), strokeStyle: color)
+        point
+    else
+      d.line(line, strokeStyle: color)
+
 
 ##
 # Updating
@@ -98,15 +97,20 @@ updateEntities = (entities, timeDelta) ->
   # Player!
   if (nav = entities.navDestination)
 
-    if _(player.corners).any((p) -> new Line(p, nav.position).nearestIntersection(map.edges))
-      entities.path = _(new AStar().search(
-        player.position.toTile(TILE_SIZE),
-        nav.position.toTile(TILE_SIZE),
-        map.walls,
-        256
-      )).map (point) -> point.fromTile(TILE_SIZE)
-    else
-      entities.path = []
+    entities.path ||= []
+    if !entities.playerTile || !entities.playerTile.isEqual(player.position.toTile(TILE_SIZE))
+
+      entities.playerTile = player.position.toTile(TILE_SIZE)
+
+      if _(player.corners).any((p) -> new Line(p, nav.position).nearestIntersection(map.edges))
+        entities.path = _(new AStar().search(
+          player.position.toTile(TILE_SIZE),
+          nav.position.toTile(TILE_SIZE),
+          map.walls,
+          256
+        )).map (point) -> point.fromTile(TILE_SIZE)
+      else
+        entities.path = []
 
     if player.moveTowards(entities.path[1] || nav.position, 256, timeDelta)
       entities.navDestination = null
