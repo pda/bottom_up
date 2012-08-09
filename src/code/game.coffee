@@ -91,15 +91,11 @@ drawObjects = ->
   # Monsters!
   _(monsters).each (monster) ->
     monster.draw(d)
-
-    # faint red line from monster to player.
-    line = new Line(monster.position, player.position)
-    d.line(line, strokeStyle: Color.string(255, 0, 0, 0.05))
-
     # strong line from monster to collision point.
+    line = new Line(monster.position, player.position)
     if (point = line.nearestIntersection(map.edges))
       line.to = point
-      d.square(point, 8, Color.string(255, 0, 0, 0.4))
+      d.square(point, 8, Color.string(255, 0, 0, 0.2))
     d.line(line, strokeStyle: Color.string(255, 0, 0, 0.5))
 
   # Loot!
