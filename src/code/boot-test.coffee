@@ -2,6 +2,7 @@ require ["vendor/underscore", "vendor/jasmine"], ->
   require ["vendor/jasmine-html"], ->
 
     subject_files = [
+      "box_collider"
       "box_entity"
       "canvi"
       "color"

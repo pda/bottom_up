@@ -1,6 +1,7 @@
 class @BoxEntity
 
   constructor: (position = Point.Zero) ->
+    @collider = new BoxCollider(this)
     @setVelocity(Point.Zero)
     @setSize(@size || 0)
     @setPosition(position)

@@ -69,18 +69,6 @@ window.addEventListener "click", (event) ->
   navDestination = new NaviationDestination(Point.at(event.clientX, event.clientY))
 
 ##
-# Colliding
-wallCollisionDetection = (entity, timeDelta) ->
-  _(entity.corners).each (corner) ->
-    movement = new Line(corner, corner.add(entity.velocity.multiply(timeDelta)))
-    if (wall = movement.nearestIntersectingLine(map.edges))
-      #wallDelta = movement.intersection(wall).subtract(corner)
-      if wall.isHorizontal()
-        entity.velocity.y = 0
-      else if wall.isVertical()
-        entity.velocity.x = 0
-
-##
 # Drawing
 drawObjects = ->
   d.c.clearRect(0, 0, WIDTH, HEIGHT)
@@ -121,14 +109,14 @@ updateObjects = (timeDelta) ->
   _(monsters).each (monster) ->
     line = new Line(monster.position, player.position)
     monster.moveTowards(player.position, 128, timeDelta)
-    wallCollisionDetection(monster, timeDelta)
+    monster.collider.withLines(map.edges, timeDelta)
     monster.update(timeDelta)
 
   # Player!
   if navDestination
     if player.moveTowards(navDestination.position, 256, timeDelta)
       navDestination = null
-  wallCollisionDetection(player, timeDelta)
+  player.collider.withLines(map.edges, timeDelta)
   player.update(timeDelta)
 
 ##
