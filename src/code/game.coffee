@@ -39,7 +39,7 @@ class Loot extends BoxEntity
 
 class Player extends BoxEntity
   color: -> "blue"
-  size: TILE_SIZE
+  size: TILE_SIZE / 2
 
 class NaviationDestination extends BoxEntity
   color: -> Color.string(128, 128, 255, 0.25)
@@ -80,6 +80,8 @@ drawEntities = (entities, drawingTools) ->
       if line.intersects(edge)
         intersection = line.intersection(edge)
         d.square(intersection, 8, Color.string(255, 0, 0, 0.2))
+    _(entities.path).each (point) ->
+      d.square(point, TILE_SIZE, Color.gray(0.5, 0.2))
 
 ##
 # Updating
@@ -95,8 +97,20 @@ updateEntities = (entities, timeDelta) ->
 
   # Player!
   if (nav = entities.navDestination)
-    if player.moveTowards(nav.position, 256, timeDelta)
+
+    if _(player.corners).any((p) -> new Line(p, nav.position).nearestIntersection(map.edges))
+      entities.path = _(new AStar().search(
+        player.position.toTile(TILE_SIZE),
+        nav.position.toTile(TILE_SIZE),
+        map.walls,
+        256
+      )).map (point) -> point.fromTile(TILE_SIZE)
+    else
+      entities.path = []
+
+    if player.moveTowards(entities.path[1] || nav.position, 256, timeDelta)
       entities.navDestination = null
+
   player.collider.withLines(map.edges, timeDelta)
   player.update(timeDelta)
 

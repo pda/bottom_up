@@ -3,6 +3,7 @@ vendors = [
 ]
 
 classes = [
+  "a_star"
   "box_collider"
   "box_entity"
   "canvi"
