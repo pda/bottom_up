@@ -31,6 +31,9 @@ class @Point
   multiply: (scalar) ->
     Point.at(@x * scalar, @y * scalar)
 
+  divide: (scalar) ->
+    Point.at(@x / scalar, @y / scalar)
+
   length: ->
     Math.sqrt(@x * @x + @y * @y)
 

@@ -48,6 +48,10 @@ describe "Point", ->
     it "(2,4) * 4 = (8,16)", ->
       expect(p(2,4).multiply(4)).toEqual(p(8,16))
 
+  describe "divide()", ->
+    it "(9,6) / 3 = (3,2)", ->
+      expect(p(9,6).divide(3)).toEqual(p(3,2))
+
   describe "length()", ->
     it "is 5 for (4,3)", ->
       expect(p(4,3).length()).toEqual(5)
