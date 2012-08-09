@@ -26,55 +26,19 @@ HEIGHT_TILES = MAP.length
 WIDTH = TILE_SIZE * WIDTH_TILES
 HEIGHT = TILE_SIZE * HEIGHT_TILES
 
-class Entity
-  constructor: (@position) ->
-    @halfSize = @size / 2
-    @sizeDelta = Point.at(@halfSize, @halfSize)
-    @velocity = Point.zero()
-  # Move towards other point, return new distance remaining.
-  moveTowards: (other, timeDelta, distance = 1) ->
-    difference = other.subtract(@position)
-    distance = Math.min(distance, difference.length())
-    if distance > 0
-      @velocity = difference.normalized().multiply(distance / timeDelta)
-    else
-      @stop()
-    return distance
-  stop: ->
-    @velocity = Point.zero()
-  update: (timeDelta) ->
-    @moveTo(@position.add(@velocity.multiply(timeDelta)))
-  setPosition: (position) ->
-    @position = position
-    @top = position.subtract(@sizeDelta).y
-    @bottom = position.add(@sizeDelta).y
-    @left = position.subtract(@sizeDelta).x
-    @right = position.add(@sizeDelta).x
-    @corners = [
-      Point.at(@left, @top),
-      Point.at(@right, @top),
-      Point.at(@left, @bottom),
-      Point.at(@right, @bottom)
-    ]
-  moveTo: (position) ->
-    @previousPosition = @position
-    @setPosition(position)
-  draw: (drawingTools) ->
-    drawingTools.square(@position, @size, @color())
-
-class Monster extends Entity
+class Monster extends BoxEntity
   color: -> "red"
   size: TILE_SIZE / 2
 
-class Loot extends Entity
+class Loot extends BoxEntity
   color: Color.pulser(220, 200, 0, 1)
   size: TILE_SIZE
 
-class Player extends Entity
+class Player extends BoxEntity
   color: -> "blue"
   size: TILE_SIZE
 
-class NaviationDestination extends Entity
+class NaviationDestination extends BoxEntity
   color: -> Color.string(128, 128, 255, 0.25)
   size: TILE_SIZE
 
