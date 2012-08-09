@@ -93,16 +93,14 @@ drawObjects = ->
     monster.draw(d)
 
     # faint red line from monster to player.
-    d.c.strokeStyle = Color.string(255, 0, 0, 0.05)
     line = new Line(monster.position, player.position)
-    d.line(line.from, line.to)
+    d.line(line, strokeStyle: Color.string(255, 0, 0, 0.05))
 
     # strong line from monster to collision point.
     if (point = line.nearestIntersection(map.edges))
       line.to = point
       d.square(point, 8, Color.string(255, 0, 0, 0.4))
-    d.c.strokeStyle = Color.string(255, 0, 0, 0.5)
-    d.line(line.from, line.to)
+    d.line(line, strokeStyle: Color.string(255, 0, 0, 0.5))
 
   # Loot!
   _(loot).each (loot) -> loot.draw(d)
@@ -110,9 +108,8 @@ drawObjects = ->
   # Navigation destination!
   if navDestination
     navDestination.draw(d)
-    d.c.strokeStyle = Color.string(0, 0, 255, 0.2)
     line = new Line(player.position, navDestination.position)
-    d.line(line.from, line.to)
+    d.line(line, strokeStyle: Color.string(0, 0, 255, 0.2))
     if (point = line.nearestIntersection(map.edges))
       d.square(point, 8, Color.string(255, 0, 0, 0.4))
     _(map.edges).each (edge) ->

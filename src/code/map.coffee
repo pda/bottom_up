@@ -75,7 +75,5 @@ class @Map
         d.square(point.fromTile(@tileSize), @tileSize, Color.gray(0.8))
 
       _(@edges).each (line) ->
-        d.c.lineWidth = 4
-        d.c.strokeStyle = Color.gray(0.6)
-        d.line(line.toArray()...)
+        d.line(line, strokeStyle: Color.gray(0.6), lineWidth: 4)
         _(line.toArray()).each (p) -> d.square(p, 6, Color.gray(0.6))
