@@ -69,8 +69,7 @@ class @Map
 
   draw: (context) ->
     _(new DrawingTools(context)).tap (d) =>
-      d.grid(@width, @height, @tileSize, Color.gray(0.9))
-      context.fillStyle = Color.gray()
+      d.grid(@width, @height, @tileSize, Color.gray(0.95))
       _(@walls).each (point) =>
         d.square(point.fromTile(@tileSize), @tileSize, Color.gray(0.8))
 
