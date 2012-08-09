@@ -116,14 +116,15 @@ drawObjects = ->
 ##
 # Updating
 updateObjects = (timeDelta) ->
+
+  # Monsters!
   _(monsters).each (monster) ->
     line = new Line(monster.position, player.position)
-    if _(map.edges).any((edge) -> line.intersects(edge))
-      monster.stop()
-    else
-      monster.moveTowards(player.position, 128, timeDelta)
-    wallCollisionDetection(monster)
+    monster.moveTowards(player.position, 128, timeDelta)
+    wallCollisionDetection(monster, timeDelta)
     monster.update(timeDelta)
+
+  # Player!
   if navDestination
     if player.moveTowards(navDestination.position, 256, timeDelta)
       navDestination = null
