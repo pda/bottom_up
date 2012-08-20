@@ -35,9 +35,12 @@ class @Color
 
   # Returns a function which, when called repeatedly, returns the specified
   # color with the alpha channel fading in and out.
-  @pulser: (r, g, b, seconds = 1) ->
+  # Seconds is the period of the pulse.
+  # fadeFactor is the peak amount of alpha subtracted.
+  @pulser: (r, g, b, seconds = 1, fadeFactor = 1) ->
     start = Date.now()
     ->
       elapsed = (Date.now() - start) / 1000
-      alpha = (Math.sin(elapsed * 2 * Math.PI / seconds) + 1) / 2
+      alpha = ((Math.sin(elapsed * 2 * Math.PI / seconds) + 1) / 2)
+      alpha = alpha * fadeFactor + 1 - fadeFactor
       Color.string(r, g, b, alpha)
