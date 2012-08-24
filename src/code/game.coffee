@@ -182,7 +182,7 @@ updateEntities = (entities, timeDelta) ->
     timeLast = timeThis
     updateEntities(entities, timeDelta)
     drawEntities(entities, drawingTools)
-    webkitRequestAnimationFrame(tick)
+    requestAnimationFrame(tick)
 
   tick()
 )()

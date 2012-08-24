@@ -1,5 +1,6 @@
 vendors = [
   "vendor/underscore"
+  "vendor/raf"
 ]
 
 classes = [
