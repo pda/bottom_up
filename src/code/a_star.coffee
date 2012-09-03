@@ -48,15 +48,15 @@ class @AStar
   # f(x): g(x) + h(x)
   # g(x): cost from the starting node to the current node
   # h(x): estimated distance to goal
-  heuristicCostEstimate: (point, destination, gScores) =>
+  heuristicCostEstimate: (point, destination, gScores) ->
     @manhattanDistance(point, destination) + gScores[point.toString()]
 
-  sortByHeuristicCostEstimate: (points, destination, gScores) =>
+  sortByHeuristicCostEstimate: (points, destination, gScores) ->
     points.sort (a, b) =>
       @heuristicCostEstimate(a, destination, gScores) -
         @heuristicCostEstimate(b, destination, gScores)
 
-  manhattanDistance: (a, b) =>
+  manhattanDistance: (a, b) ->
     Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
 
   neighbors: (point) ->
