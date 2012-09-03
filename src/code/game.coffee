@@ -74,12 +74,6 @@ drawEntities = (entities, drawingTools) ->
   # Monsters!
   _.chain(entities.monsters).each (monster) ->
     monster.draw(d)
-    # strong line from monster to collision point.
-    line = new Line(monster.position, player.position)
-    if (point = line.nearestIntersection(map.edges))
-      line.to = point
-      d.square(point, 8, Color.string(255, 0, 0, 0.2))
-    d.line(line, strokeStyle: Color.string(255, 0, 0, 0.5))
 
   # Player!
   player.draw(d)
