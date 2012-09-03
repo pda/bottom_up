@@ -5,7 +5,7 @@ MAP = [
   "#       #                      #"
   "#    @  #     #          ####  #"
   "#       #     #          #     #"
-  "#       #     #    !     #%    #"
+  "#       #     #    !     #     #"
   "#  ######     #          ####  #"
   "#             #                #"
   "#             #########        #"
@@ -35,15 +35,6 @@ class Monster extends BoxEntity
   color: -> "red"
   size: TILE_SIZE * 0.3
   speed: 128
-
-class DumbMonster extends Monster
-  color: Color.pulser(255, 0, 0, 0.5, 0.5)
-
-class HunterMonster extends Monster
-  color: Color.pulser(255, 0, 0, 1.0, 0.5)
-  speed: 64
-  size: TILE_SIZE * 0.5
-  pathfinding: true
 
 class Loot extends BoxEntity
   color: Color.pulser(220, 200, 0, 1.5)
@@ -103,20 +94,7 @@ updateEntities = (entities, timeDelta) ->
   # Monsters!
   _(entities.monsters).each (monster) ->
     line = new Line(monster.position, player.position)
-    if monster.pathfinding?
-      if _(monster.corners).any((p) -> line.nearestIntersection(map.edges))
-        entities.hunterPath = _(new AStar().search(
-          monster.position.toTile(TILE_SIZE),
-          player.position.toTile(TILE_SIZE),
-          map.walls,
-          128
-        )).map (point) -> point.fromTile(TILE_SIZE)
-      else
-        entities.hunterPath = []
-
-      monster.moveTowards(entities.hunterPath[1] || player.position, monster.speed, timeDelta)
-    else
-      monster.moveTowards(player.position, monster.speed, timeDelta)
+    monster.moveTowards(player.position, monster.speed, timeDelta)
     monster.collider.withLines(map.edges, timeDelta)
     monster.update(timeDelta)
 
@@ -157,13 +135,11 @@ updateEntities = (entities, timeDelta) ->
 
   entities = {}
 
-  entities.dumbMonsters = _(map.monsters).map (point) ->
-    new DumbMonster(point.fromTile(TILE_SIZE))
+  entities.monsters = _(map.monsters).map (point) ->
+    new Monster(point.fromTile(TILE_SIZE))
 
   entities.hunters = _(map.hunters).map (point) ->
     new HunterMonster(point.fromTile(TILE_SIZE))
-
-  entities.monsters = _.union(entities.dumbMonsters, entities.hunters)
 
   entities.loot = _(map.loot).map (point) ->
     new Loot(point.fromTile(TILE_SIZE))

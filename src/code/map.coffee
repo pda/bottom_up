@@ -1,6 +1,6 @@
 class @Map
 
-  constructor: (@width, @height, @tileSize, @player, @walls, @monsters, @hunters, @loot) ->
+  constructor: (@width, @height, @tileSize, @player, @walls, @monsters, @loot) ->
     @edges = @findEdges()
 
   @fromAscii: (tileSize, rows) ->
@@ -8,17 +8,15 @@ class @Map
     height = tileSize * rows.length
     walls = []
     monsters = []
-    hunters = []
     loot = []
     player = null
     _(rows).each (row, y) ->
       _(row.split("")).each (char, x) ->
         if char == "#" then walls.push(Point.at(x, y))
         if char == "!" then monsters.push(Point.at(x, y))
-        if char == "%" then hunters.push(Point.at(x, y))
         if char == "$" then loot.push(Point.at(x, y))
         if char == "@" then player = Point.at(x, y)
-    new Map(width, height, tileSize, player, walls, monsters, hunters, loot)
+    new Map(width, height, tileSize, player, walls, monsters, loot)
 
   # TODO: refactor this behemoth!
   findEdges: ->
