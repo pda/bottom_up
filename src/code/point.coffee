@@ -12,7 +12,7 @@ class @Point
     @x == 0 && @y == 0
 
   toString: ->
-    [@x, @y].join(",")
+    "#{@x},#{@y}"
 
   toTile: (size) ->
     Point.at(Math.floor(@x / size), Math.floor(@y / size))
