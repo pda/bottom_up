@@ -24,7 +24,7 @@ class @AStar
         cost++
         if closed.contains(neighbor) then continue
         if obstacles && obstacles.contains(neighbor) then continue
-        tentativeGScore = gScores[current.toString()] + @distance(current, neighbor)
+        tentativeGScore = gScores[current.toString()] + @manhattanDistance(current, neighbor)
 
         if !open.contains(neighbor) || tentativeGScore < gScores[neighbor.toString()]
           open.add(neighbor)
@@ -49,24 +49,15 @@ class @AStar
   # g(x): cost from the starting node to the current node
   # h(x): estimated distance to goal
   heuristicCostEstimate: (point, destination, gScores) =>
-    @distance(point, destination) + gScores[point.toString()]
+    @manhattanDistance(point, destination) + gScores[point.toString()]
 
   sortByHeuristicCostEstimate: (points, destination, gScores) =>
     points.sort (a, b) =>
       @heuristicCostEstimate(a, destination, gScores) -
         @heuristicCostEstimate(b, destination, gScores)
 
-  # sleep-deprivation caching code.
-  distanceCache: {}
-  distance: (a, b) =>
-    key = "#{a.toString()}:#{b.toString()}"
-    if d = @distanceCache[key]
-      return d
-    x = a.x - b.x
-    y = a.y - b.y
-    d = Math.sqrt(x * x + y * y)
-    @distanceCache[key] = d
-    return d
+  manhattanDistance: (a, b) =>
+    Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
 
   neighbors: (point) ->
     x = point.x
