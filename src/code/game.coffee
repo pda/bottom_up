@@ -34,7 +34,7 @@ HEIGHT = TILE_SIZE * HEIGHT_TILES
 class Monster extends BoxEntity
   color: -> "red"
   size: TILE_SIZE * 0.3
-  speed: 128
+  speed: 64
 
 class Loot extends BoxEntity
   color: Color.pulser(220, 200, 0, 1.5)
@@ -43,6 +43,7 @@ class Loot extends BoxEntity
 class Player extends BoxEntity
   color: -> "blue"
   size: TILE_SIZE / 2
+  speed: 128
 
 class NaviationDestination extends BoxEntity
   color: -> Color.string(128, 128, 255, 0.25)
@@ -110,7 +111,7 @@ updateEntities = (entities, timeDelta) ->
       else
         entities.path = []
 
-    if player.moveTowards(entities.path[1] || nav.position, 256, timeDelta)
+    if player.moveTowards(entities.path[1] || nav.position, player.speed, timeDelta)
       entities.navDestination = null
 
   player.collider.withLines(map.edges, timeDelta)
