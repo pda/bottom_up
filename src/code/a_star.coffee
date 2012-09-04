@@ -14,7 +14,7 @@ class @AStar
     while open.count()
       current = @sortByHeuristicCostEstimate(open.values(), goal, gScores)[0]
 
-      if current.toString() == goal.toString()
+      if current.isEqual(goal)
         return @reconstructPath(cameFrom, goal)
 
       open.remove(current)
