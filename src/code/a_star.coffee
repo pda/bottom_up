@@ -2,7 +2,7 @@ class @AStar
 
   search: (start, goal, obstacles, costLimit) ->
     open = new @PointSet([start]) # To be evaluated.
-    closed = new @PointSet        # Already evaluated.
+    closed = new @PointSet([])    # Already evaluated.
     cameFrom = {}                 # Map of navigated nodes.
     obstacles = new @PointSet(obstacles)
     gScores = {}
@@ -81,8 +81,7 @@ class @AStar
   PointSet: class
     constructor: (points) ->
       @points = {}
-      if points
-        @add(point) for point in points
+      @add(point) for point in points
     add: (point) ->
       @points[point.toString()] = point
     remove: (point) ->
