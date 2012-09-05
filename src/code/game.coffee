@@ -28,8 +28,6 @@ HEIGHT_TILES = MAP.length
 WIDTH = TILE_SIZE * WIDTH_TILES
 HEIGHT = TILE_SIZE * HEIGHT_TILES
 
-A_STAR_EFFORT = 128
-
 ##
 # Subclasses
 
@@ -107,8 +105,7 @@ updateEntities = (entities, timeDelta) ->
         entities.path = _(new AStar().search(
           player.position.toTile(TILE_SIZE),
           nav.position.toTile(TILE_SIZE),
-          map.walls,
-          A_STAR_EFFORT
+          map.walls
         )).map (point) -> point.fromTile(TILE_SIZE)
       else
         entities.path = []
