@@ -79,16 +79,19 @@ class @AStar
     ].map (p) -> new Point(p[0], p[1])
 
   PointSet: class
-    constructor: (points) ->
-      @points = {}
-      @add(point) for point in points
+    constructor: (@points) ->
     add: (point) ->
-      @points[point.toString()] = point
+      @points.push(point)
     remove: (point) ->
-      delete @points[point.toString()]
+      for p, i in @points
+        if p.isEqual(point)
+          @points.splice(i, 1)
+          return
     values: ->
-      Object.keys(@points).map (k) => @points[k]
+      @points
     count: ->
-      @values().length
+      @points.length
     contains: (point) ->
-      @points[point.toString()]
+      for p in @points
+        return true if p.isEqual(point)
+      return false
